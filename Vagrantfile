@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
     kubmaster.vm.hostname = 'kubmaster'
     kubmaster.vm.provision "docker"
     kubmaster.vm.box_url = "debian/buster64"
-
+    kubmaster.vm.synced_folder "./share", "/home/vagrant/share", create: true
     kubmaster.vm.provision "ansible" do |ansible|
       ansible.playbook = "playbook.yml"
     end
