@@ -1,0 +1,12 @@
+---
+- name: This is the main playbook
+  hosts: all
+  tasks:
+    - name: Update and upgrade all packages
+      include_role:
+        name: update-system
+
+    - name: Install all necessary Kubernetes packages and setup the cluster
+      include_role:
+        name: kubernetes
+

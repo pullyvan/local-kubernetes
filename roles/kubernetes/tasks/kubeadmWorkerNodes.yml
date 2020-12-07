@@ -1,0 +1,9 @@
+---
+- name: Copy join command to worker
+  copy:
+    src: /tmp/kubernetesJoinCommand
+    dest: /tmp/kubernetesJoinCommand
+
+- name: Join worker node to kubernetes cluster
+  shell: bash /tmp/kubernetesJoinCommand
+  become: yes

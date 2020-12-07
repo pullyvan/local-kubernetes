@@ -1,0 +1,33 @@
+---
+- name: Init Kubernetes cluster with Kubeadm
+  shell: kubeadm init --apiserver-advertise-address=192.168.56.101 --node-name ${HOSTNAME} --pod-network-cidr=10.244.0.0/16
+  args:
+    executable: /bin/bash
+  become: yes
+
+- name: Setup kubectl 
+  include: setUpKubectl.yml
+
+- name: Sleep for 90 seconds and continue with play
+  wait_for:
+    timeout: 90
+
+- name: Download calico yaml manifest
+  get_url:
+    url: https://docs.projectcalico.org/manifests/calico-typha.yaml
+    dest: ./calico.yml
+
+- name: Setup Kubernetes network with calico yaml manifest
+  shell: kubectl apply -f ./calico.yml
+  args:
+    executable: /bin/bash
+
+- name: Generate Kubernetes token to join the cluster
+  shell: kubeadm token create --ttl 1h30m0s --print-join-command
+  args:
+    executable: /bin/bash
+  register: kubernetesJoinCommand
+
+- name: Copy join command to local file
+  local_action: copy content="{{ kubernetesJoinCommand.stdout_lines[0] }}" dest="/tmp/kubernetesJoinCommand" mode=0777
+
